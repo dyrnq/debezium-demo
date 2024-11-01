@@ -14,11 +14,8 @@ debezium:
     offset.flush.interval.ms=0
     database.hostname=127.0.0.1
     database.port=34306
-    database.user=root
-    database.password=666666
-    #database.dbname=mytest2
-    #database.server.name=
-    #database.whitelist=
+    database.user=canal
+    database.password=canal
     database.server.id=85747
     #table.exclude.list
     table.include.list=mytest2.*
@@ -27,7 +24,7 @@ debezium:
     #The 'snapshot.mode' value is invalid: Value must be one of always, never, initial_only, configuration_based, when_needed, initial, custom, schema_only, no_data, recovery, schema_only_recovery
     include.schema.changes=true
     include.query=true
-    schema.include.list=mytest2
+    database.include.list=mytest2
     topic.prefix=test
     schema.history.internal=io.debezium.storage.file.history.FileSchemaHistory
     schema.history.internal.file.filename=data/schemahistory.data
