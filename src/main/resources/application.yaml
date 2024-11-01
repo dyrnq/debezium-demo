@@ -31,10 +31,10 @@ debezium:
     #transforms=unwrap
     #transforms.unwrap.type=io.debezium.transforms.ExtractNewRecordState
     #transforms.unwrap.drop.tombstones=false
-    max.batch.size=1
-    max.queue.size=2
-
-
+    max.batch.size=2048
+    max.queue.size=8192
+    #max.batch.size default 2048
+    #max.queue.size default 8192
 logging:
   level:
     io:
