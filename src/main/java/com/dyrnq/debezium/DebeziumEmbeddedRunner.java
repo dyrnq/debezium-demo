@@ -2,15 +2,12 @@ package com.dyrnq.debezium;
 
 import io.debezium.embedded.Connect;
 import io.debezium.embedded.EmbeddedEngine;
-import io.debezium.engine.ChangeEvent;
 import io.debezium.engine.DebeziumEngine;
-import io.debezium.engine.RecordChangeEvent;
 import io.debezium.engine.format.ChangeEventFormat;
 import io.debezium.engine.format.Json;
 import io.debezium.util.LoggingContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.connect.source.SourceRecord;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationListener;
@@ -49,17 +46,20 @@ public class DebeziumEmbeddedRunner implements ApplicationRunner, ApplicationLis
     public void run(ApplicationArguments args) throws Exception {
         CountDownLatch firstLatch = new CountDownLatch(1);
         try (DebeziumEngine engine = DebeziumEngine.create(ChangeEventFormat.of(Connect.class))
-
                 .using(config.asProperties())
-                .notifying((records, committer) -> {
-
-                    for (RecordChangeEvent<SourceRecord> record : records) {
+                .notifying((record) -> {
                         log.info("record: {} ", record);
-                        committer.markProcessed(record);
                     }
-                    committer.markBatchFinished();
-                })
-                .using(this.getClass().getClassLoader())
+                )
+//                .notifying((records, committer) -> {
+//
+//                    for (RecordChangeEvent<SourceRecord> record : records) {
+//                        log.info("record: {} ", record);
+//                        committer.markProcessed(record);
+//                    }
+//                    committer.markBatchFinished();
+//                })
+//                .using(this.getClass().getClassLoader())
                 .using((success, message, error) -> {
                     if (error != null) {
                         log.error("Error while shutting down", error);
