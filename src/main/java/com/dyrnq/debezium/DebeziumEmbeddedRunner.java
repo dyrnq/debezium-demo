@@ -1,9 +1,10 @@
 package com.dyrnq.debezium;
 
-import io.debezium.embedded.Connect;
+import com.dyrnq.debezium.util.DebeziumUtil;
+import io.debezium.config.Configuration;
 import io.debezium.embedded.EmbeddedEngine;
+import io.debezium.engine.ChangeEvent;
 import io.debezium.engine.DebeziumEngine;
-import io.debezium.engine.format.ChangeEventFormat;
 import io.debezium.engine.format.Json;
 import io.debezium.util.LoggingContext;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @RequiredArgsConstructor
 public class DebeziumEmbeddedRunner implements ApplicationRunner, ApplicationListener<ContextClosedEvent> {
-    private final io.debezium.config.Configuration config;
+    private final Configuration config;
 
     private static void shutdownHook(EmbeddedEngine engine) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -45,11 +46,14 @@ public class DebeziumEmbeddedRunner implements ApplicationRunner, ApplicationLis
     @Override
     public void run(ApplicationArguments args) throws Exception {
         CountDownLatch firstLatch = new CountDownLatch(1);
-        try (DebeziumEngine engine = DebeziumEngine.create(ChangeEventFormat.of(Connect.class))
+        try (DebeziumEngine<ChangeEvent<String, String>> engine = DebeziumEngine.create(Json.class)
                 .using(config.asProperties())
-                .notifying((record) -> {
-                        log.info("record: {} ", record);
-                    }
+                .notifying(record -> {
+                            if (record.value() == null) return;
+                            DebeziumUtil.save(record);
+                            //log.info("record: {} ", record);
+
+                        }
                 )
 //                .notifying((records, committer) -> {
 //
@@ -59,14 +63,23 @@ public class DebeziumEmbeddedRunner implements ApplicationRunner, ApplicationLis
 //                    }
 //                    committer.markBatchFinished();
 //                })
-//                .using(this.getClass().getClassLoader())
+                .using(this.getClass().getClassLoader())
+                .using(new DebeziumEngine.ConnectorCallback() {
+                    @Override
+                    public void connectorStarted() {
+                    }
+
+                    @Override
+                    public void connectorStopped() {
+                    }
+                })
                 .using((success, message, error) -> {
                     if (error != null) {
                         log.error("Error while shutting down", error);
                     }
                     firstLatch.countDown();
                 })
-                .build();
+                .build()
         ) {
             // Run the engine asynchronously ...
             ExecutorService exec = Executors.newFixedThreadPool(1);
@@ -82,7 +95,6 @@ public class DebeziumEmbeddedRunner implements ApplicationRunner, ApplicationLis
         }
 
     }
-
 
     @Override
     public void onApplicationEvent(ContextClosedEvent event) {

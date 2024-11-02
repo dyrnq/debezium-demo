@@ -37,4 +37,6 @@ build/
 
 data
 logs
+json
+json-old
 .vagrant/
