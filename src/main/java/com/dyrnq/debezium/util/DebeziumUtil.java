@@ -13,6 +13,7 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.sql.JDBCType;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -80,6 +81,14 @@ public class DebeziumUtil {
             System.out.printf("%s=%s # %s%n", s, value, description);
 
         }
+    }
+
+    public static void jdbcTypes() {
+
+        for (JDBCType jdbcType : JDBCType.values()) {
+            System.out.println(String.format("%s=%d", jdbcType, jdbcType.getVendorTypeNumber()));
+        }
+
     }
 }
 

@@ -13,9 +13,13 @@ public class DebeziumUtilTest {
     public void printOffsetData() throws IOException {
         DebeziumUtil.jsonOffsetDataFile(new File("data/offset.data"));
     }
+
     @Test
     public void defaultMySqlConnectorConfig() throws IOException {
         DebeziumUtil.defaultMySqlConnectorConfig();
     }
-
+    @Test
+    public void jdbcTypes() throws IOException {
+        DebeziumUtil.jdbcTypes();
+    }
 }
