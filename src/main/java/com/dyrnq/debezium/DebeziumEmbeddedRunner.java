@@ -2,7 +2,7 @@ package com.dyrnq.debezium;
 
 import com.dyrnq.debezium.util.DebeziumUtil;
 import io.debezium.config.Configuration;
-import io.debezium.embedded.EmbeddedEngine;
+import io.debezium.embedded.async.AsyncEmbeddedEngine;
 import io.debezium.engine.ChangeEvent;
 import io.debezium.engine.DebeziumEngine;
 import io.debezium.engine.format.Json;
@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,10 +27,14 @@ import java.util.concurrent.TimeUnit;
 public class DebeziumEmbeddedRunner implements ApplicationRunner, ApplicationListener<ContextClosedEvent> {
     private final Configuration config;
 
-    private static void shutdownHook(EmbeddedEngine engine) {
+    private static void shutdownHook(AsyncEmbeddedEngine engine) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             log.info("Requesting embedded engine to shut down");
-            engine.stop();
+            try {
+                engine.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }));
     }
 
