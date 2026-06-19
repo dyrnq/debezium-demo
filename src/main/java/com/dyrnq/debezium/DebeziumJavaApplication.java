@@ -9,7 +9,7 @@ public class DebeziumJavaApplication {
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(DebeziumJavaApplication.class)
-                .web(WebApplicationType.NONE)
+                .web(WebApplicationType.SERVLET)
                 .run(args);
     }
 }
