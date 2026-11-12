@@ -3,7 +3,8 @@ package com.dyrnq.debezium.cdc;
 import com.dyrnq.debezium.model.CdcEvent;
 import com.dyrnq.debezium.model.CdcEvent.Column;
 import com.dyrnq.debezium.model.CdcEvent.TableChange;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,9 +22,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Component
 public class MysqlSinkProcessor implements MysqlSinkWriter {
+
+    private static final Logger log = LoggerFactory.getLogger(MysqlSinkProcessor.class);
 
     // ── DDL safety: whitelist of allowed charset names ──────────
     // Prevents charset injection via crafted CDC events.

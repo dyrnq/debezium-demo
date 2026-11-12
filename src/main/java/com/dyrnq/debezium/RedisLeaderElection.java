@@ -1,6 +1,7 @@
 package com.dyrnq.debezium;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -32,8 +33,9 @@ import java.util.concurrent.atomic.AtomicLong;
  * </ul>
  */
 @Component
-@Slf4j
 public class RedisLeaderElection {
+
+    private static final Logger log = LoggerFactory.getLogger(RedisLeaderElection.class);
 
     private final StringRedisTemplate redisTemplate;
     private final String lockKey;

@@ -5,7 +5,8 @@ import com.lmax.disruptor.*;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.lmax.disruptor.util.DaemonThreadFactory;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,9 +15,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Slf4j
 @Component
 public class RingBufferDispatcher {
+
+    private static final Logger log = LoggerFactory.getLogger(RingBufferDispatcher.class);
 
     private final Disruptor<CdcEventHolder> disruptor;
     private final RingBuffer<CdcEventHolder> ringBuffer;
